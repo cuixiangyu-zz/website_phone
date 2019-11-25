@@ -47,6 +47,10 @@ export default {
         userid: '',
         userpwd: '',
       },
+      loginForm: {
+        username: '',
+        password: ''
+      },
       lable: '+86',
     };
   },
