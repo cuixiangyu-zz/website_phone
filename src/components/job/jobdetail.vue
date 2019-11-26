@@ -2,10 +2,11 @@
     <div class="job_detial">
         <div class="job_detial_header">
             <router-link to="/home" class="flex_child"><span class="icon-left"></span></router-link>
-            <div>
+            <h3>{{scrollInfo}}</h3>
+            <!--<div>
                 <el-dropdown style="width: 30%;left: 35%;height: 1.6rem">
                   <span class="el-dropdown-link" >
-                    下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+                    下拉菜单<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
                   </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>黄金糕</el-dropdown-item>
@@ -15,7 +16,15 @@
                         <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
-            </div>
+            </div>-->
+        </div>
+        <div class="head-tab"  ref="wrapper">
+            <ul class="clear">
+                <li v-for="(item,index) in tableData" :key="item.res.name" @click="tabChange(item.res.name)">{{item.res.name}}<span class="icon-down"></span></li>
+            </ul>
+
+            <tableView ref="judge" :tabData="tabData1" :nowIndex="nowIndex" @hide="hide" @indexData="indexData" @btnSure="btnSure" v-show="showHide"></tableView>
+
         </div>
         <!---->
         <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
@@ -283,6 +292,29 @@
             sessionStorage.setItem("refresh_video_detail", true);
             next();
         },
+        hide() {
+            this.showHide = false;
+        },
+        indexData() {
+            this.nowIndex = [0];
+            //			var title=this.titleData[this.tableIndex].title;
+            //			this.titleData[this.tableIndex].title=title.replace(/[^\u4e00-\u9fa5]+/,"")+"("+number+")";
+        },
+        btnSure(number, indexData) {
+            this.indexSub[this.tableIndex] = indexData;
+            let title = this.titleData[this.tableIndex].title;
+            if (number != 0) {
+                this.titleData[this.tableIndex].title =
+                    title.replace(/[^\u4e00-\u9fa5]+/, "") + "(" + number + ")";
+            } else {
+                this.titleData[this.tableIndex].title = title.replace(
+                    /[^\u4e00-\u9fa5]+/,
+                    ""
+                );
+            }
+
+            this.showHide = false;
+        }
     }
 </script>
 

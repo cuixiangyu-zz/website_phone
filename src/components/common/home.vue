@@ -7,19 +7,19 @@
     <div class="navbar flex_parent">
       <router-link to="/home" class="flex_child">
         <span class="icon-earth"></span>
-        <span>职位</span>
+        <span>日本</span>
       </router-link>
       <router-link @click.native="showitem" to="/company" class="flex_child">
         <span class="icon-company"></span>
-        <span>公司</span>
+        <span>欧美</span>
       </router-link>
       <router-link to="/message" class="flex_child">
         <span class="icon-message"></span>
-        <span>消息</span>
+        <span>动漫</span>
       </router-link>
       <router-link to="/aboutme" class="flex_child">
         <span class="icon-me"></span>
-        <span>我的</span>
+        <span>漫画</span>
       </router-link>
     </div>
   </div>
