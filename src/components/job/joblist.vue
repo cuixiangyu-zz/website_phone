@@ -279,9 +279,10 @@ export default {
       sessionStorage.setItem('listQuery_japan_video',JSON.stringify(this.listQuery))
       sessionStorage.setItem('refresh_japan_video',true)
       sessionStorage.setItem("refresh_video_detail", true);
+      sessionStorage.setItem("queryList", {id: videoid , type: 1});
       this.$router.push({
         path: '/video_detail/index',
-        name: '影片详情', // 要跳转的路径的 name,可在 router 文件夹下的 index.js 文件内找
+        name: 'jobdetail', // 要跳转的路径的 name,可在 router 文件夹下的 index.js 文件内找
         params: { id: videoid }
       })
     },

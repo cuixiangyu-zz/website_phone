@@ -3,101 +3,84 @@
         <div class="job_detial_header">
             <router-link to="/home" class="flex_child"><span class="icon-left"></span></router-link>
             <h3>{{scrollInfo}}</h3>
-            <!--<div>
-                <el-dropdown style="width: 30%;left: 35%;height: 1.6rem">
-                  <span class="el-dropdown-link" >
-                    下拉菜单<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
-                  </span>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>黄金糕</el-dropdown-item>
-                        <el-dropdown-item>狮子头</el-dropdown-item>
-                        <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                        <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-                        <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-            </div>-->
+
         </div>
-        <div class="head-tab"  ref="wrapper">
+        <div class="head-tab" ref="wrapper">
             <ul class="clear">
-                <li v-for="(item,index) in tableData" :key="item.res.name" @click="tabChange(item.res.name)">{{item.res.name}}<span class="icon-down"></span></li>
+                <li v-for="(item,index) in titleData" :key="item.id" @click="tabChange(item.id)">
+                    {{item.name}}<span class="icon-down"></span></li>
             </ul>
 
-            <tableView ref="judge" :tabData="tabData1" :nowIndex="nowIndex" @hide="hide" @indexData="indexData" @btnSure="btnSure" v-show="showHide"></tableView>
+            <tableView ref="judge" :tabData="tabData1" :nowIndex="nowIndex" @hide="hide" @indexData="indexData"
+                       @btnSure="btnSure" v-show="showHide" :name="nowIndex"></tableView>
 
         </div>
         <!---->
-        <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
-            <el-tab-pane
-                    v-for="(item,index) in tableData"
-                    :key="index"
-                    :label="item.res.name"
-                    :name="item.res.name"
-            >
-                <el-container>
-                    <el-header></el-header>
-                </el-container>
-                <el-row type="flex">
-                    <el-col>
-                        <el-card>
-                            <el-image :key="item.res.id" :src="item.res.coverUrl" :lazy="true" fit="fill"></el-image>
-                        </el-card>
-                    </el-col>
-                </el-row>
-                <el-row type="flex">
-                    <el-col>
-                        <el-row style="bottom: 0px; top: 0px; right: 20px; left: 20px;">
-                            <el-col :span="24" style="width: 88%;left: 6%">
-                                <p style="font-size: 25px; ">{{item.res.name}}</p>
+        <div v-if="tabData.selectedType===1">
+            <el-container>
+                <el-header></el-header>
+            </el-container>
+            <el-row type="flex">
+                <el-col>
+                    <el-card>
+                        <el-image :key="tableData.id" :src="tableData.coverUrl" :lazy="true"
+                                  fit="fill"></el-image>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-row type="flex">
+                <el-col>
+                    <el-row style="bottom: 0px; top: 0px; right: 20px; left: 20px;">
+                        <el-col :span="24" style="width: 88%;left: 6%">
+                            <p style="font-size: 25px; ">{{tableData.name}}</p>
+                        </el-col>
+                        <el-col :span="24">
+                            <div class="block">
+                                <span class="demonstration">评分</span>
+                                <el-rate v-model="tableData.level" :colors="colors"
+                                         @change="changelevel(tableData)"></el-rate>
+                            </div>
+                        </el-col>
+                        <el-col :span="24">
+                            <p style="font-size: 17px; ">作者</p>
+                            <el-col
+                                    v-for="actor in tableData.actors"
+                                    :span="4"
+                                    :key="actor.id"
+                                    class="row-li"
+                                    @click="getActor(actor.id)"
+                            >
+                                <el-tag>{{actor.chineseName}}</el-tag>
                             </el-col>
-                            <el-col :span="24">
-                                <div class="block">
-                                    <span class="demonstration">评分</span>
-                                    <el-rate v-model="item.res.level" :colors="colors"
-                                             @change="changelevel(item.res)"></el-rate>
-                                </div>
+                        </el-col>
+                        <el-col :span="24">
+                            <p style="font-size: 17px; width: 20%;">分类</p>
+                            <el-col
+                                    v-for="type in tableData.types"
+                                    :span="4"
+                                    :key="type.id"
+                                    class="row-li"
+                                    @click="getType(type)"
+                            >
+                                <el-tag>{{type.chineseName}}</el-tag>
                             </el-col>
-                            <el-col :span="24">
-                                <p style="font-size: 17px; ">作者</p>
-                                <el-col
-                                        v-for="actor in item.res.actors"
-                                        :span="4"
-                                        :key="actor.id"
-                                        class="row-li"
-                                        @click="getActor(actor.id)"
-                                >
-                                    <el-tag>{{actor.chineseName}}</el-tag>
-                                </el-col>
-                            </el-col>
-                            <el-col :span="24">
-                                <p style="font-size: 17px; width: 20%;">分类</p>
-                                <el-col
-                                        v-for="type in item.res.types"
-                                        :span="4"
-                                        :key="type.id"
-                                        class="row-li"
-                                        @click="getType(type)"
-                                >
-                                    <el-tag>{{type.chineseName}}</el-tag>
-                                </el-col>
-                            </el-col>
-                        </el-row>
-                    </el-col>
-                </el-row>
+                        </el-col>
+                    </el-row>
+                </el-col>
+            </el-row>
 
-                <el-row style="width: 90%; left: 5%;" v-for="video in item.res.video" :key="video.poster">
-                    <div class="player-container">
-                        <video-player
-                                class="vjs-custom-skin"
-                                :options="video"
-                                @keyup.left="down"
-                                @keyup.right="up"
-                        ></video-player>
-                    </div>
-                </el-row>
-                <el-row style="width: 60%; left: 20%;"></el-row>
-            </el-tab-pane>
-        </el-tabs>
+            <el-row style="width: 90%; left: 5%;" v-for="video in tableData.video" :key="video.poster">
+                <div class="player-container">
+                    <video-player
+                            class="vjs-custom-skin"
+                            :options="video"
+                            @keyup.left="down"
+                            @keyup.right="up"
+                    ></video-player>
+                </div>
+            </el-row>
+            <el-row style="width: 60%; left: 20%;"></el-row>
+        </div>
         <!--立即沟通-->
         <div class="will_chat">
             <router-link to="/message" class="flex_child"><span>立即沟通</span></router-link>
@@ -106,10 +89,10 @@
 </template>
 
 <script>
-    import {getDetil, changelevel} from "@/api/videoDetail";
+    import {getVideoDetil} from "@/api/videoDetail"
     // 引入video样式
-    import "video.js/dist/video-js.css";
-    import "vue-video-player/src/custom-theme.css";
+    import "video.js/dist/video-js.css"
+    import "vue-video-player/src/custom-theme.css"
 
     export default {
         name: 'detail',
@@ -120,11 +103,11 @@
                 tempInfo: "",
                 id: "",
                 isSelected: false,
+                showHide: false,
                 // 匹配的新数据
                 // 温馨提示都一样
                 // 推荐职位
-                recommend_jobs: [],
-                tableData: [],
+                tableData: null,
                 querylist: [],
                 editableTabsValue: "",
                 video: undefined,
@@ -145,11 +128,19 @@
                     id: null,
                     level: null
                 },
-                colors: ['#99A9BF', '#F7BA2A', '#FF9900']
+                colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+                titleData: [{title: "日本", id: 1}, {title: "欧美", id: 2}, {title: "动漫", id: 3}, {title: "漫画", id: 3}],
+                tabData: {
+                    japan: [],
+                    american: [],
+                    animate: [],
+                    comic: [],
+                    selectedId: 1,
+                    selectedType: 1
+                },
+                nowIndex: 1,
+                tabData1: null
             }
-        },
-        watch: {
-            '$route': 'fecthIndex'
         },
         computed: {},
         methods: {
@@ -175,23 +166,48 @@
             toggleSelect() {
                 this.isSelected = !this.isSelected;
             },
+            tabChange(index) {
+                this.tableIndex = index;
+                this.tabData1 = this.tabData[index];
+                this.nowIndex = this.indexSub[index];
+                this.showHide = true;
+                this.$refs.judge.judgeIndex(this.nowIndex);
+                //调用子组件的方法
+            },
+            hide() {
+                this.showHide = false;
+            },
             getDetil() {
-                var listQuery = sessionStorage.getItem("listQuery_video_detail");
-                var refresh = sessionStorage.getItem("refresh_video_detail");
-                if (listQuery !== null && refresh !== null && refresh === "true") {
-                    this.querylist = JSON.parse(listQuery);
+                var tabData = sessionStorage.getItem("tabData");
+                this.tabData.selectedId = this.$route.params.id
+                if (tabData !== null &&
+                    tabData !== undefined &&
+                    tabData !== "") {
+                    this.tabData = JSON.parse(tabData);
                 }
                 if (
-                    this.$route.params.id !== null &&
-                    this.$route.params.id !== undefined &&
-                    this.$route.params.id !== ""
+                    this.tabData.selectedId !== null &&
+                    this.tabData.selectedId !== undefined &&
+                    this.tabData.selectedId !== ""
                 ) {
-                    this.querylist.push(this.$route.params.id);
+                    console.log("ssssssssssssssssssssssssssssssssss")
+                    this.tabData.selectedType = 1;
+                    // this.tabData.selectedId = queryList.id;
+                    console.log(this.tabData.selectedType)
+                    if (this.tabData.selectedType === 1) {
+                        this.tabData.japan.push(this.tabData.selectedId)
+                    } else if (this.tabData.selectedType === 2) {
+                        this.tabData.american.push(this.tabData.selectedId)
+                    } else if (this.tabData.selectedType === 3) {
+                        this.tabData.animate.push(this.tabData.selectedId)
+                    } else if (this.tabData.selectedType === 4) {
+                        this.tabData.comic.push(this.tabData.selectedId)
+                    }
+                    this.tabData1 = this.tabData.japan
                 }
-
-                for (var i = 0; i < this.querylist.length; i++) {
-                    var srcList = []
-                    getDetil({id: this.querylist[i]}).then(res => {
+                if (this.tabData.selectedType === 1) {
+                    getVideoDetil({id:this.tabData.selectedId}).then(res => {
+                        var srcList = []
                         for (const i of res.address) {
                             const videoinfo = {
                                 playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
@@ -215,18 +231,12 @@
                             srcList.push(videoinfo);
                         }
                         res.video = srcList
-                        this.tableData.push({res});
-
-                        if (
-                            this.$route.params.id !== null &&
-                            this.$route.params.id !== undefined &&
-                            this.$route.params.id !== "" &&
-                            this.$route.params.id === res.id
-                        ) {
-                            this.editableTabsValue = res.name;
-                        }
+                        this.tableData = res
+                        console.log(this.tableData)
                     });
                 }
+
+
                 console.log(this.tableData);
             },
             getType(type) {
@@ -273,6 +283,29 @@
                 this.level.id = item.id;
                 changelevel(this.level);
             },
+            hide() {
+                this.showHide = false;
+            },
+            indexData() {
+                this.nowIndex = [0];
+                //			var title=this.titleData[this.tableIndex].title;
+                //			this.titleData[this.tableIndex].title=title.replace(/[^\u4e00-\u9fa5]+/,"")+"("+number+")";
+            },
+            btnSure(number, indexData) {
+                this.indexSub[this.tableIndex] = indexData;
+                let title = this.titleData[this.tableIndex].title;
+                if (number != 0) {
+                    this.titleData[this.tableIndex].title =
+                        title.replace(/[^\u4e00-\u9fa5]+/, "") + "(" + number + ")";
+                } else {
+                    this.titleData[this.tableIndex].title = title.replace(
+                        /[^\u4e00-\u9fa5]+/,
+                        ""
+                    );
+                }
+
+                this.showHide = false;
+            }
 
         },
         // 創建后挂载到root之后调用该钩子函数
@@ -291,29 +324,6 @@
             );
             sessionStorage.setItem("refresh_video_detail", true);
             next();
-        },
-        hide() {
-            this.showHide = false;
-        },
-        indexData() {
-            this.nowIndex = [0];
-            //			var title=this.titleData[this.tableIndex].title;
-            //			this.titleData[this.tableIndex].title=title.replace(/[^\u4e00-\u9fa5]+/,"")+"("+number+")";
-        },
-        btnSure(number, indexData) {
-            this.indexSub[this.tableIndex] = indexData;
-            let title = this.titleData[this.tableIndex].title;
-            if (number != 0) {
-                this.titleData[this.tableIndex].title =
-                    title.replace(/[^\u4e00-\u9fa5]+/, "") + "(" + number + ")";
-            } else {
-                this.titleData[this.tableIndex].title = title.replace(
-                    /[^\u4e00-\u9fa5]+/,
-                    ""
-                );
-            }
-
-            this.showHide = false;
         }
     }
 </script>
