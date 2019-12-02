@@ -4,8 +4,7 @@
     <div class="main_fixed_top">
       <div class="job_header clear">
         <div class="job_header_left">
-          <span>web前端</span>
-          <span>HTML5</span>
+          <span>日本电影</span>
         </div>
         <div class="inforight job_header_icon">
           <span>
@@ -28,7 +27,6 @@
       >
         <li v-for="(item,index) in tableData.list" :key="index">
           <router-link
-            @click="changeDetialId(index)"
             :to="{ name: 'detail', params: { id: item.id }}"
           >
             <img :src="item.coverUrl" />
