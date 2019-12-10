@@ -4,8 +4,7 @@
     <div class="main_fixed_top">
       <div class="job_header clear">
         <div class="job_header_left">
-          <span>web前端</span>
-          <span>HTML5</span>
+          <span>日本电影</span>
         </div>
         <div class="inforight job_header_icon">
           <span>
@@ -16,44 +15,6 @@
             <i class="iconfont icon-sousuo"></i>
           </span>
         </div>
-      </div>
-      <div class="job_nav">
-        <ul class="flex_parent">
-          <li
-            class="flex_child"
-            v-for="(nav,index) in navlist"
-            :class="{ selected: nav.isSelected }"
-            @click="changeColor(nav,index)"
-            :key="index"
-          >
-            {{nav.title}}
-            <span class="icon-down"></span>
-          </li>
-        </ul>
-        <keep-alive>
-          <slideTabComp
-            v-show="navlist[0].isSelected"
-            @toParent="fromChild"
-            @hide="hide"
-            v-if="slideIndex==0"
-            :slideTemp="slideTemp"
-          ></slideTabComp>
-          <selectCityComp v-show="navlist[1].isSelected" @hide="hide" v-else-if="slideIndex==1"></selectCityComp>
-          <compRequireComp
-            v-show="navlist[2].isSelected"
-            @hide="hide"
-            v-else-if="slideIndex==2"
-            :indexArr="indexArr[0]"
-            :slideTemp="slideTemp"
-          ></compRequireComp>
-          <compRequireComp
-            v-show="navlist[3].isSelected"
-            @hide="hide"
-            else="slideIndex==3"
-            :indexArr="indexArr[1]"
-            :slideTemp="slideTemp"
-          ></compRequireComp>
-        </keep-alive>
       </div>
     </div>
     <!--列表-->
@@ -66,35 +27,21 @@
       >
         <li v-for="(item,index) in tableData.list" :key="index">
           <router-link
-            @click="changeDetialId(job)"
-            :to="{ name: 'detail', params: { jobId: job.id }}"
+            :to="{ name: 'detail', params: { id: item.id }}"
           >
             <img :src="item.coverUrl" />
             <h4 class="clear">{{item.name}}</h4>
             <p class="clear">
               <span></span>
-              {{job.conmpany}}
-              <span class="tag-group__title">类型:</span>
-              <van-tag
-                v-for="types in item.types"
-                :key="types.id"
+              <span class="tag-group__title">演员:</span>
+              <el-tag
+                v-for="actor in item.actors"
+                :key="actor.id"
                 size="mini"
                 effect="plain"
                 @click="getType(types)"
-              >{{ types.chineseName }}</van-tag>
-            </p>
-            <p class="clear">
-              <span class="icon-position"></span>
-              <span>{{job.con_place}}</span>
-              <span class="icon-seniority"></span>
-              <span>{{job.seniority}}</span>
-              <span class="icon-education"></span>
-              <span>{{job.education}}</span>
-            </p>
-            <p class="clear title">
-              <img :src="job.src" alt class="infoleft" />
-              <span class="infoleft">{{job.ceo}}</span>
-              <span class="infoleft">{{job.title}}</span>
+
+              >{{ actor.chineseName }}</el-tag>
             </p>
           </router-link>
         </li>
@@ -129,138 +76,12 @@ import slideTabComp from './slideTabComp.vue'
 import selectCityComp from './selectCityComp.vue'
 // 公司和要求公用一个子组件
 import compRequireComp from './compRequireComp.vue'
+
+import { getPageList } from '@/api/video'
+
 export default {
   data() {
     return {
-      navlist: [
-        {
-          title: '推荐',
-          isSelected: false
-        },
-        {
-          title: '上海',
-          isSelected: false
-        },
-        {
-          title: '公司',
-          isSelected: false
-        },
-        {
-          title: '要求',
-          isSelected: false
-        }
-      ],
-      slideIndex: '',
-      isShowSlide: false,
-      slideTemp: [],
-      // 传递到 公司和 要求子组件 记录是否选中的状态
-      indexArr: [[[0], [0], [0]], [[0], [0], [0]]],
-      slideData: [
-        [
-          {
-            name: '推荐',
-            hadSelested: true
-          },
-          {
-            name: '最新',
-            hadSelested: false
-          }
-        ],
-        // 城市选择这项数据太多没用父子通信传递数据
-        [0, 1],
-        [
-          {
-            title: '融资规模',
-            isCheckbox: true,
-            list: [
-              '全部',
-              '未融资',
-              '天使轮',
-              'A轮',
-              'B轮',
-              'C轮',
-              'D轮及以上',
-              '已上市',
-              '不需要融资'
-            ]
-          },
-          {
-            title: '团队规模',
-            isCheckbox: true,
-            list: [
-              '全部',
-              '0-20人',
-              '20-99人',
-              '100-499人',
-              '500-999人',
-              '1000-9999人',
-              '10000人以上'
-            ]
-          },
-          {
-            title: '行业',
-            isCheckbox: true,
-            list: [
-              '全部',
-              '非互联网行业',
-              '健康医疗',
-              '生活服务',
-              '旅游',
-              '金融',
-              '信息安全',
-              '广告营销',
-              '数据服务',
-              '智能硬件',
-              '文化娱乐',
-              '网络招聘',
-              '分类信息',
-              '电子商务',
-              '移动互联网',
-              '企业服务',
-              '社交网络',
-              '教育培训',
-              'O2O',
-              '游戏',
-              '互联网',
-              '媒体',
-              'IT软件'
-            ]
-          }
-        ],
-        [
-          {
-            title: '最低学历',
-            isCheckbox: true,
-            list: ['全部', '中专及以下', '高中', '大专', '本科', '硕士', '博士']
-          },
-          {
-            title: '经验',
-            isCheckbox: true,
-            list: [
-              '全部',
-              '应届生',
-              '1年以内',
-              '1-3年',
-              '3-5年',
-              '5-10年',
-              '10年以上'
-            ]
-          },
-          {
-            title: '薪资(单选)',
-            isCheckbox: false,
-            list: [
-              '全部',
-              '3k以下',
-              '3k-5k',
-              '5k-10k',
-              '10k-20k',
-              '20k-50k',
-              '50k以上'
-            ]
-          }
-        ]
-      ],
       willshow: false,
       timer: null,
       mainscroll: null,
@@ -270,7 +91,25 @@ export default {
       jobId: '',
       loading: false,
       allLoaded: false,
-      wrapperHeight: 0
+      wrapperHeight: 0,
+      tableData: [],
+      listQuery: {
+        pageNum: 1,
+        pageSize: 10,
+        actorName: null,
+        videoName: null,
+        types: null,
+        videoType: 1
+      },
+      typeMap: '',
+      actors: '',
+      deviceDetail: null,
+      imgSrc: 'http://127.0.0.1:8081/website/resources/_MG_0170.jpg',
+      url: 'http://127.0.0.1:8081/website/resources/_MG_0170.jpg',
+      srcList: [
+        // 'http://127.0.0.1:8081/website/resources/_MG_0170.jpg',
+        // 'http://127.0.0.1:8081/website/resources/_MG_0177.jpg'
+      ]
     }
   },
   components: {
@@ -363,15 +202,6 @@ export default {
         // console.log(this.jobs);
       }, 2500)
     },
-    initApiUrl() {
-      // 线上
-      // let domain="https://"+window.location.host+"/";
-      // 本地
-      let domain = 'http://' + window.location.host + '/'
-      var str = 'static/data/joblist.json'
-      this.apiUrl = domain + str
-      // console.log(this.apiUrl);
-    },
     // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
     stopScroll() {
       let container = document.getElementById('jobcontent')
@@ -394,7 +224,73 @@ export default {
         },
         false
       )
+    },
+    getPageList() {
+      var listQuery = sessionStorage.getItem('listQuery_japan_video')
+      var refresh = sessionStorage.getItem('refresh_japan_video')
+      if(listQuery!==null&&refresh!==null&&refresh==='true'){
+        this.listQuery = JSON.parse(listQuery)
+      }
+      getPageList(this.listQuery).then(res => {
+        this.tableData = res.PageInfo
+        this.actors = res.actors
+        this.typeMap = res.typeMap
+        console.log(this.tableData)
+        console.log(this.actors)
+        console.log(this.typeMap)
+      })
+    },
+    handleCurrentChange(index) {
+      this.listQuery.pageNum = index
+      sessionStorage.setItem('refresh_japan_video',false)
+      this.getPageList()
+    },
+    handleSizeChange(pageSize) {
+      this.listQuery.pageSize = pageSize
+      sessionStorage.setItem('refresh_japan_video',false)
+      this.getPageList()
+    },
+    handleClick() {
+      // alert('11111111')
+    },
+    getType(type) {
+      event.stopPropagation()
+      const arr = []
+      const arr1 = []
+      arr.push('allTypes')
+      arr.push(type.id)
+      arr1.push(arr)
+      this.listQuery.types = arr1
+      this.listQuery.actorName = null
+      console.log(this.listQuery)
+      sessionStorage.setItem('refresh_japan_video',false)
+      this.getPageList()
+    },
+    getActor(actor) {
+      event.stopPropagation()
+      this.listQuery.actorName = actor
+      this.listQuery.types = null
+      sessionStorage.setItem('refresh_japan_video',false)
+      this.getPageList()
+    },
+    jump(videoid) {
+      sessionStorage.setItem('listQuery_japan_video',JSON.stringify(this.listQuery))
+      sessionStorage.setItem('refresh_japan_video',true)
+      sessionStorage.setItem("refresh_video_detail", true);
+      sessionStorage.setItem("queryList", {id: videoid , type: 1});
+      this.$router.push({
+        path: '/video_detail/index',
+        name: 'jobdetail', // 要跳转的路径的 name,可在 router 文件夹下的 index.js 文件内找
+        params: { id: videoid }
+      })
+    },
+    showimg() {
+      const arr = []
+      arr.push('http://127.0.0.1:8081/website/resources/_MG_0177.jpg')
+      arr.push('http://127.0.0.1:8081/website/resources/_MG_0170.jpg')
+      this.srcList = arr
     }
+
   },
   mounted() {
     // 去掉范湖底部事件监听
@@ -405,10 +301,15 @@ export default {
     // console.log(this.$refs.wrapper.getBoundingClientRect().top);
   },
   created() {
-    this.initApiUrl()
-    this.$nextTick(function() {
-      this.loadData()
-    })
+    this.getPageList()
+  },
+  beforeRouteLeave(to, form, next) {
+    sessionStorage.setItem(
+            "listQuery_japan_video",
+            JSON.stringify(this.listQuery)
+    );
+    sessionStorage.setItem("refresh_japan_video", true);
+    next()
   }
 }
 </script>

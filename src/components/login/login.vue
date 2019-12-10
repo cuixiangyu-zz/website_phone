@@ -9,12 +9,11 @@
               {{lable}}
               <i class="icon-down"></i>
             </b>
-            <input type="text" v-model="userules.userid" placeholder="用户名">
+            <input type="text" v-model="loginForm.userName" placeholder="用户名">
           </li>
           <li>
             <span></span>
-            <input type="password" v-model="userules.userpwd" placeholder="密码">
-            <b>获取验证码</b>
+            <input type="password" v-model="loginForm.password" placeholder="密码">
           </li>
           <li>
             <input @click.prevent="infologin" type="submit" value="进入">
@@ -36,7 +35,7 @@
 
 <script>
 import sessionStore from '../../js/sessionStore'
-
+import { login } from '@/api/user'
 export default {
   data() {
     return {
@@ -48,7 +47,7 @@ export default {
         userpwd: '',
       },
       loginForm: {
-        username: '',
+        userName: '',
         password: ''
       },
       lable: '+86',
@@ -70,22 +69,18 @@ export default {
   },
   methods: {
     infologin() {
-      // let _self = this;
-      const users = sessionStore.fetch()
-      users.forEach(user => {
-        if (
-          this.userules.userid === user.userid &&
-          this.userules.userpwd === user.userpwd
-        ) {
-          this.$router.push({
+
+          console.log(this.loginForm)
+          login(this.loginForm).then(res => {
+            this.$router.push({
+              path: '/home'
+            });
+          })
+          /*this.$router.push({
             path: '/home'
-          });
+          });*/
           //console.log(_self.$router);
-          //console.log("登录成功");
-        } else {
-          alert('用户名与密码不匹配！')
-        }
-      });
+
     },
     adduser() {
       //注册用户，如果已经被注册
@@ -117,8 +112,8 @@ export default {
     //加载之前先给一个可以登录的用户
     const admin = {
       session_id: Math.random().toString(32).slice(2),
-      userid: '13800000000',
-      userpwd: '123456',
+      username: 'admin',
+      password: '123456',
     };
     // 使用：改变session_id
     this.$store.commit("logIn/getSession_id", admin.session_id)

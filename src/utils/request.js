@@ -1,10 +1,12 @@
 import axios from 'axios'
+import { Message } from 'element-ui'
+import store from '@/store'
 // import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  baseURL: 'http://192.168.1.102:8081/website',
+  baseURL: 'http://192.168.1.23:8081/website',
   // baseURL: 'http://192.168.0.71:8080',
   // baseURL: 'http://localhost:9528',
   withCredentials: true, // send cookies when cross-domain requests

@@ -8,7 +8,13 @@ import axios from 'axios'
 // 08-19.1
 // import store from './vuex/store'
 import store from './store/index'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+// import locale from 'element-ui/lib/locale/lang/en' // lang i18n
+Vue.use(ElementUI)
 
+import VueVideoPlayer from 'vue-video-player'
+Vue.use(VueVideoPlayer)
 // rem
 import "./js/flexible"
 //导入字体样式
