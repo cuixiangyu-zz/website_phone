@@ -22,8 +22,7 @@
       <ul
         class="page-infinite-list job_lists"
         v-infinite-scroll="loadMore"
-        infinite-scroll-disabled="loading"
-        infinite-scroll-distance="50"
+        infinite-scroll-disabled="switchForMore"
       >
         <li v-for="(item,index) in tableData.list" :key="index">
           <router-link
@@ -109,7 +108,8 @@ export default {
       srcList: [
         // 'http://127.0.0.1:8081/website/resources/_MG_0170.jpg',
         // 'http://127.0.0.1:8081/website/resources/_MG_0177.jpg'
-      ]
+      ],
+      switchForMore: false
     }
   },
   components: {
@@ -150,7 +150,7 @@ export default {
     },
     willscroll() {
       //2.1 使用定时器，防止频繁滚动
-      if (window.scrollTime) {
+      /*if (window.scrollTime) {
         window.clearTimeout(window.scrollTime)
       }
       //2.2 定时器
@@ -161,11 +161,11 @@ export default {
           document.body.scrollTop
         this.willshow = scrollTop > 300 ? true : false
         // console.log("滚动了");
-      }, 100)
+      }, 100)*/
     },
     //3 返回顶部
     gotop() {
-      this.willshow = !this.willshow
+      /*this.willshow = !this.willshow
       let d = document.documentElement
       let b = document.body
       // console.log(this.timer,d,b);
@@ -175,7 +175,7 @@ export default {
         //到达顶部清除定时器，重新绑定滚动事件
         if (d.scrollTop + b.scrollTop === 0)
           clearInterval(this.timer, (window.onscroll = this.willscroll))
-      }, 10)
+      }, 10)*/
     },
     loadData() {
       let _this = this
@@ -195,12 +195,19 @@ export default {
     },
     // 模擬無限下拉加載
     loadMore() {
+      this.switchForMore = false
       this.loading = true
-      setTimeout(() => {
-        this.jobs = this.jobs.concat(this.temp)
+      this.listQuery.pageNum += 1
+      getPageList(this.listQuery).then(res => {
+        this.tableData.concat(res.PageInfo)
+        this.actors.concat(res.actors)
+        this.typeMap.concat(res.typeMap)
         this.loading = false
-        // console.log(this.jobs);
-      }, 2500)
+        this.switchForMore = true
+      }).catch(res =>{
+        this.loading = false
+        this.switchForMore = true
+      })
     },
     // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
     stopScroll() {
@@ -226,18 +233,22 @@ export default {
       )
     },
     getPageList() {
+      this.switchForMore = false
       var listQuery = sessionStorage.getItem('listQuery_japan_video')
       var refresh = sessionStorage.getItem('refresh_japan_video')
       if(listQuery!==null&&refresh!==null&&refresh==='true'){
         this.listQuery = JSON.parse(listQuery)
+        sessionStorage.setItem("refresh_japan_video", false);
       }
       getPageList(this.listQuery).then(res => {
-        this.tableData = res.PageInfo
-        this.actors = res.actors
-        this.typeMap = res.typeMap
-        console.log(this.tableData)
-        console.log(this.actors)
-        console.log(this.typeMap)
+        this.tableData.concat(res.PageInfo)
+        this.actors.concat(res.actors)
+        this.typeMap.concat(res.typeMap)
+        this.loading = false
+        this.switchForMore = true
+      }).catch(res =>{
+        this.loading = false
+        this.switchForMore = true
       })
     },
     handleCurrentChange(index) {
