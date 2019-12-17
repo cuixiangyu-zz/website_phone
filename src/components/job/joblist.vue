@@ -22,7 +22,8 @@
       <ul
         class="page-infinite-list job_lists"
         v-infinite-scroll="loadMore"
-        infinite-scroll-disabled="switchForMore"
+        infinite-scroll-disabled="loading"
+        infinite-scroll-distance="50"
       >
         <li v-for="(item,index) in tableData.list" :key="index">
           <router-link
@@ -199,15 +200,18 @@ export default {
       this.loading = true
       this.listQuery.pageNum += 1
       getPageList(this.listQuery).then(res => {
-        this.tableData.concat(res.PageInfo)
-        this.actors.concat(res.actors)
-        this.typeMap.concat(res.typeMap)
-        this.loading = false
-        this.switchForMore = true
-      }).catch(res =>{
-        this.loading = false
-        this.switchForMore = true
+        if(this.tableData.length<=0){
+          this.tableData=res.PageInfo
+        }else{
+          this.tableData.list = this.tableData.list.concat(res.PageInfo.list)
+        }
+        //
+        // this.actors.concat(res.actors)
+        // this.typeMap.concat(res.typeMap)
+
       })
+      this.loading = false
+      console.log(this.tableData)
     },
     // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
     stopScroll() {
@@ -241,9 +245,7 @@ export default {
         sessionStorage.setItem("refresh_japan_video", false);
       }
       getPageList(this.listQuery).then(res => {
-        this.tableData.concat(res.PageInfo)
-        this.actors.concat(res.actors)
-        this.typeMap.concat(res.typeMap)
+        this.tableData=res.PageInfo
         this.loading = false
         this.switchForMore = true
       }).catch(res =>{

@@ -198,11 +198,19 @@
             // 模擬無限下拉加載
             loadMore() {
                 this.loading = true
-                setTimeout(() => {
-                    this.jobs = this.jobs.concat(this.temp)
-                    this.loading = false
-                    // console.log(this.jobs);
-                }, 2500)
+                this.listQuery.pageNum += 1
+                getPageList(this.listQuery).then(res => {
+                    if(this.tableData.length<=0){
+                        this.tableData=res.PageInfo
+                    }else{
+                        this.tableData.list = this.tableData.list.concat(res.PageInfo.list)
+                    }
+                    //
+                    // this.actors.concat(res.actors)
+                    // this.typeMap.concat(res.typeMap)
+
+                })
+                this.loading = false
             },
             // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
             stopScroll() {

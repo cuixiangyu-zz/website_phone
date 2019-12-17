@@ -81,10 +81,6 @@
             </el-row>
             <el-row style="width: 60%; left: 20%;"></el-row>
         </div>
-        <!--立即沟通-->
-        <div class="will_chat">
-            <router-link to="/message" class="flex_child"><span>立即沟通</span></router-link>
-        </div>
     </div>
 </template>
 

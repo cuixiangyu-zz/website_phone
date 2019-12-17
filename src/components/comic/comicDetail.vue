@@ -29,7 +29,7 @@
                 </el-col>
             </el-row>
 
-            <el-row class="row-ul" gutter="20" style="margin-top: 1rem">
+            <el-row class="row-ul" gutter="20" style="margin-top: 1rem" >
                 <el-col
                         v-for="address in tableData.address"
                         :span="12"
@@ -43,10 +43,7 @@
             </el-row>
             <el-row style="width: 60%; left: 20%;"></el-row>
         </div>
-        <!--立即沟通-->
-        <div class="will_chat">
-            <router-link to="/message" class="flex_child"><span>立即沟通</span></router-link>
-        </div>
+
     </div>
 </template>
 
