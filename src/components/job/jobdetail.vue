@@ -37,8 +37,19 @@
                         <el-col :span="24">
                             <div class="block">
                                 <span class="demonstration">评分</span>
-                                <el-rate v-model="tableData.level" :colors="colors"
+                                <el-rate v-model="level.level" :colors="colors"
                                          @change="changelevel(tableData)"></el-rate>
+                            </div>
+                            <div class="block">
+                                <span class="demonstration">收藏</span>
+                                <el-tooltip class="item" effect="dark" content="添加收藏" placement="right">
+                                    <el-button v-if="tableData.userFavorite==null" size="small" type="primary" icon="el-icon-star-off"
+                                               @click="addFavorite(tableData)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="取消收藏" placement="right">
+                                    <el-button v-if="tableData.userFavorite!==null" size="small" type="primary" icon="el-icon-star-on"
+                                               @click="deleteFavorite(tableData)"></el-button>
+                                </el-tooltip>
                             </div>
                         </el-col>
                         <el-col :span="24">
@@ -85,7 +96,9 @@
 </template>
 
 <script>
-    import {getVideoDetil} from "@/api/videoDetail"
+    import {getVideoDetil, changelevel, saveViewHistory, getWatchList} from "@/api/videoDetail"
+    import {addHistory} from "@/api/viewHistory";
+    import {addFavorite, deleteFavorite} from "@/api/userFavorite";
     // 引入video样式
     import "video.js/dist/video-js.css"
     import "vue-video-player/src/custom-theme.css"
@@ -122,6 +135,7 @@
                 url: "http://127.0.0.1:8081/website/resources/_MG_0138.jpg",
                 level: {
                     id: null,
+                    type: null,
                     level: null
                 },
                 colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
@@ -135,7 +149,21 @@
                     selectedType: 1
                 },
                 nowIndex: 1,
-                tabData1: null
+                tabData1: null,
+                viewHistory: {
+                    type: null,
+                    videoId: null,
+                    startData: '',
+                    watchTime: ''
+                },
+                addFavoriteParms: {
+                    type: null,
+                    videoId: null
+                },
+                videoAndIdList: {
+                    idList: [],
+                    videoList: []
+                }
             }
         },
         computed: {},
@@ -201,9 +229,12 @@
                     }
                     this.tabData1 = this.tabData.japan
                 }
+                this.viewHistory.videoId = this.tabData.selectedId;
+                this.videoAndIdList.idList.unshift(this.tabData.selectedId);
                 if (this.tabData.selectedType === 1) {
                     getVideoDetil({id:this.tabData.selectedId}).then(res => {
                         var srcList = []
+                        res.coverUrl = res.coverUrl.replace(/\\/g,"/");
                         for (const i of res.address) {
                             const videoinfo = {
                                 playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
@@ -277,6 +308,7 @@
             },
             changelevel(item) {
                 this.level.id = item.id;
+                this.level.type = item.type;
                 changelevel(this.level);
             },
             hide() {
@@ -301,6 +333,107 @@
                 }
 
                 this.showHide = false;
+            },
+            saveViewHistory() {
+                addHistory(this.viewHistory).then(res => {
+
+                })
+            },
+            changelevel(item) {
+                this.level.id = item.id;
+                this.level.type = item.type;
+                changelevel(this.level);
+            },
+            addFavorite(data) {
+                this.addFavoriteParms.videoId = data.id;
+                this.addFavoriteParms.type = data.type;
+                addFavorite(this.addFavoriteParms).then(res => {
+                    this.tableData.userFavorite = res;
+                }).catch(res => {
+                    this.getDetil();
+                })
+            },
+            deleteFavorite(data) {
+                deleteFavorite({id: this.tableData.userFavorite.id}).then(res => {
+                    this.tableData.userFavorite = null;
+                }).catch(res => {
+                    this.getDetil();
+                })
+            },
+            getWatchList() {
+                getWatchList({idList: JSON.stringify(this.videoAndIdList.idList)}).then(res => {
+                    res.forEach(item => {
+                        if (item.type === 1) {
+                            item.type = '日本影片'
+                        }else if (item.type === 2) {
+                            item.type = '美国影片'
+                        }else if (item.type === 3) {
+                            item.type = '动漫'
+                        }else if (item.type === 4) {
+                            item.type = '小视频'
+                        }else if (item.type === 5) {
+                            item.type = '图片'
+                        }
+                    })
+                    this.videoAndIdList.videoList = res;
+                    this.tableVisible = true;
+                    console.log(this.videoAndIdList);
+                })
+            },
+            deleteVideo(index, row) {
+                for (var i = 0; i < this.videoAndIdList.idList.length; i++) {
+                    if (row.id === this.videoAndIdList.idList[i]) {
+                        this.videoAndIdList.idList.splice(i, 1); // 将使后面的元素依次前移，数组长度减1
+                        i--; // 如果不减，将漏掉一个元素
+                    }
+                }
+                this.getWatchList();
+            },
+            selectVideo(index, row) {
+                const currentTime = Date.now();
+
+                this.viewHistory.watchTime = currentTime - this.viewHistory.startData;
+                this.viewHistory.startData = new Date(this.viewHistory.startData);
+                this.saveViewHistory();
+                this.viewHistory.startData = Date.now();
+                this.tableVisible = false;
+                this.querydata = row.id;
+                getDetil({id: this.querydata}).then(res => {
+                    this.viewHistory.type = res.type;
+                    this.level.level = res.level;
+                    this.tableData = res;
+                    const srcList = [];
+                    for (const i of res.address) {
+                        const videoInfo = {
+                            playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
+                            autoplay: false, // 如果true,浏览器准备好时开始回放。
+                            controls: true, // 控制条
+                            preload: "auto", // 视频预加载
+                            muted: false, // 默认情况下将会消除任何音频。
+                            loop: false, // 导致视频一结束就重新开始。
+                            language: "zh-CN",
+                            aspectRatio: "16:9", // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+                            fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+                            sources: [
+                                {
+                                    src: i
+                                }
+                            ],
+                            poster: res.coverUrl,
+                            width: document.documentElement.clientWidth,
+                            notSupportedMessage: "此视频暂无法播放，请稍后再试" // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+                        };
+                        srcList.push(videoInfo);
+                    }
+                    this.videos = srcList
+                });
+
+            },
+            tableRowClassName({row, rowIndex}) {
+                if (row.id === this.querydata) {
+                    return 'success-row';
+                }
+                return '';
             }
 
         },
@@ -311,6 +444,13 @@
         },
         // 该实例被创建还没挂载root之前，ajax可以在这里
         created() {
+            this.viewHistory.startData = Date.now();
+            var list = sessionStorage.getItem("videoAndIdList");
+            if (list !== null &&
+                list !== undefined &&
+                list !== "") {
+                this.videoAndIdList = JSON.parse(list);
+            }
             this.getDetil();
         },
         beforeRouteLeave(to, form, next) {
@@ -319,6 +459,12 @@
                 JSON.stringify(this.querylist)
             );
             sessionStorage.setItem("refresh_video_detail", true);
+            sessionStorage.setItem("videoAndIdList", JSON.stringify(this.videoAndIdList));
+            const currentTime = Date.now();
+
+            this.viewHistory.watchTime = currentTime - this.viewHistory.startData;
+            this.viewHistory.startData = new Date(this.viewHistory.startData);
+            this.saveViewHistory();
             next();
         }
     }
