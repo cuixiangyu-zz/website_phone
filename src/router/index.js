@@ -10,6 +10,7 @@ const home = resolve => require(['@/components/common/home'], resolve)
 const joblist = resolve => require(['@/components/job/joblist'], resolve)
 const jobdetail = resolve => require(['@/components/job/jobdetail'], resolve)
 const americanVideoList = resolve => require(['@/components/american/americanVideoList'], resolve)
+const pornHubVideoList = resolve => require(['@/components/pornHub/pornHubVideoList'], resolve)
 const comicList = resolve => require(['@/components/comic/comicList'], resolve)
 const comicDetail = resolve => require(['@/components/comic/comicDetail'], resolve)
 
@@ -85,6 +86,11 @@ export default new Router({
                     path: "/americanVideoList",
                     name: "americanVideoList",
                     component: americanVideoList
+                },
+                {
+                    path: "/pornHubVideoList",
+                    name: "pornHubVideoList",
+                    component: pornHubVideoList
                 },
                 {
                     path: "/comicList",

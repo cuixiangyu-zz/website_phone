@@ -233,6 +233,7 @@
                 this.videoAndIdList.idList.unshift(this.tabData.selectedId);
                 if (this.tabData.selectedType === 1) {
                     getVideoDetil({id:this.tabData.selectedId}).then(res => {
+                        this.viewHistory.type = res.type;
                         var srcList = []
                         res.coverUrl = res.coverUrl.replace(/\\/g,"/");
                         for (const i of res.address) {

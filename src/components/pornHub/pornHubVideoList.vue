@@ -2,11 +2,10 @@
     <div id="main">
         <!--固定的顶部-->
         <div class="main_fixed_top">
-            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect"
-                     background-color="#545c64"
+            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect"background-color="#545c64"
                      text-color="#fff"
                      active-text-color="#ffd04b">
-                <el-menu-item index="1">漫画</el-menu-item>
+                <el-menu-item index="1">pornHub</el-menu-item>
                 <el-menu-item index="2">我的收藏</el-menu-item>
                 <el-menu-item index="3">浏览记录</el-menu-item>
             </el-menu>
@@ -14,159 +13,108 @@
         <!--列表-->
 
 
-        <div class="job_content" id="comicList" ref="wrapper" v-if="tab===1">
-            <el-row class="row-ul" gutter="20"
+        <div class="job_content" id="pornList" ref="wrapper" v-if="tab===1">
+            <ul
+                    class="page-infinite-list job_lists"
                     v-infinite-scroll="loadMore"
                     infinite-scroll-disabled="loading"
-                    infinite-scroll-distance="50">
-                <el-col
-                        v-for="item in tableData.comicList.list"
-                        :span="12"
-                        :key="item.id"
-                        class="row-li"
-                        @click.native="handleClick"
-                        style="height:400px"
-                >
-                    <el-card :body-style="{ padding: '0px' }">
-                        <el-image :src="item.coverUrl" :preview-src-list="item.address" @click="showimg"
-                                  lazy></el-image>
-                        <div style="padding: 14px;" @click="jump(item.id)">
-                            <span class="spantest">{{ item.name }}</span>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ item.actorname }}</time>
-                                <span class="tag-group__title">类型:</span>
-                                <el-tag
-                                        v-for="types in item.types"
-                                        :key="types.id"
-                                        size="mini"
-                                        effect="plain"
-                                        @click="getType(types)"
-                                >{{ types.chineseName }}
-                                </el-tag>
-                            </div>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ item.actorname }}</time>
-                                <span class="tag-group__title">作者:</span>
-                                <el-tag
-                                        v-for="actors in item.actors"
-                                        :key="actors.id"
-                                        size="mini"
-                                        effect="plain"
-                                        @click="getActor(actors.id)"
-                                >{{ actors.chineseName }}
-                                </el-tag>
-                            </div>
-                        </div>
-                    </el-card>
-                </el-col>
-            </el-row>
+                    infinite-scroll-distance="50"
+            >
+                <li v-for="(item,index) in tableData.pornList.list" :key="index">
+                    <router-link
+                            @click="changeDetialId(index)"
+                            :to="{ name: 'detail', params: { id: item.id }}"
+                    >
+                        <img :src="item.coverUrl"/>
+                        <h4 class="clear">{{item.name}}</h4>
+                        <p class="clear">
+                            <span></span>
+                            <span class="tag-group__title">演员:</span>
+                            <el-tag
+                                    v-for="actor in item.actors"
+                                    :key="actor.id"
+                                    size="mini"
+                                    effect="plain"
+                                    @click="getType(types)"
+
+                            >{{ actor.chineseName }}
+                            </el-tag>
+                        </p>
+                    </router-link>
+                </li>
+            </ul>
             <div v-show="loading" class="page-infinite-loading">
                 <mt-spinner type="fading-circle"></mt-spinner>
                 客官您滑慢点...
             </div>
         </div>
 
-        <div class="job_content" id="comicFavorite" ref="wrapper" v-if="tab===2">
-            <el-row class="row-ul" gutter="20"
+        <div class="job_content" id="pornFavorite" ref="wrapper" v-if="tab===2">
+            <ul
+                    class="page-infinite-list job_lists"
                     v-infinite-scroll="loadMore"
                     infinite-scroll-disabled="loading"
-                    infinite-scroll-distance="50">
-                <el-col
-                        v-for="item in tableData.comicFavorite.list"
-                        :span="12"
-                        :key="item.id"
-                        class="row-li"
-                        @click.native="handleClick"
-                        style="height:400px"
-                >
-                    <el-card :body-style="{ padding: '0px' }">
-                        <el-image :src="item.picture.coverUrl" :preview-src-list="item.picture.address" @click="showimg"
-                                  lazy></el-image>
-                        <div style="padding: 14px;" @click="jump(item.picture.id)">
-                            <span class="spantest">{{ item.picture.name }}</span>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ item.picture.actorname }}</time>
-                                <span class="tag-group__title">类型:</span>
-                                <el-tag
-                                        v-for="types in item.picture.types"
-                                        :key="types.id"
-                                        size="mini"
-                                        effect="plain"
-                                        @click="getType(types)"
-                                >{{ types.chineseName }}
-                                </el-tag>
-                            </div>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ item.picture.actorname }}</time>
-                                <span class="tag-group__title">作者:</span>
-                                <el-tag
-                                        v-for="actors in item.actors"
-                                        :key="actors.id"
-                                        size="mini"
-                                        effect="plain"
-                                        @click="getActor(actors.id)"
-                                >{{ actors.chineseName }}
-                                </el-tag>
-                            </div>
-                        </div>
-                    </el-card>
-                </el-col>
-            </el-row>
+                    infinite-scroll-distance="50"
+            >
+                <li v-for="(item,index) in tableData.pornFavorite.list" :key="index">
+                    <router-link
+                            @click="changeDetialId(index)"
+                            :to="{ name: 'detail', params: { id: item.video.id }}"
+                    >
+                        <img :src="item.video.coverUrl"/>
+                        <h4 class="clear">{{item.video.name}}</h4>
+                        <p class="clear">
+                            <span></span>
+                            <span class="tag-group__title">演员:</span>
+                            <el-tag
+                                    v-for="actor in item.video.actors"
+                                    :key="actor.id"
+                                    size="mini"
+                                    effect="plain"
+                                    @click="getType(types)"
+
+                            >{{ actor.chineseName }}
+                            </el-tag>
+                        </p>
+                    </router-link>
+                </li>
+            </ul>
             <div v-show="loading" class="page-infinite-loading">
                 <mt-spinner type="fading-circle"></mt-spinner>
                 客官您滑慢点...
             </div>
-            <div v-show="noMore" class="page-infinite-loading">
-                暂无更多...
-            </div>
         </div>
 
-        <div class="job_content" id="comicHistory" ref="wrapper" v-if="tab===3">
-            <el-row class="row-ul" gutter="20"
+        <div class="job_content" id="pornHistory" ref="wrapper" v-if="tab===3">
+            <ul
+                    class="page-infinite-list job_lists"
                     v-infinite-scroll="loadMore"
                     infinite-scroll-disabled="loading"
-                    infinite-scroll-distance="50">
-                <el-col
-                        v-for="item in tableData.comicHistory.list"
-                        :span="12"
-                        :key="item.id"
-                        class="row-li"
-                        @click.native="handleClick"
-                        style="height:400px"
-                >
-                    <el-card :body-style="{ padding: '0px' }">
-                        <el-image :src="item.picture.coverUrl" :preview-src-list="item.picture.address" @click="showimg"
-                                  lazy></el-image>
-                        <div style="padding: 14px;" @click="jump(item.picture.id)">
-                            <span class="spantest">{{ item.picture.name }}</span>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ item.picture.actorname }}</time>
-                                <span class="tag-group__title">类型:</span>
-                                <el-tag
-                                        v-for="types in item.picture.types"
-                                        :key="types.id"
-                                        size="mini"
-                                        effect="plain"
-                                        @click="getType(types)"
-                                >{{ types.chineseName }}
-                                </el-tag>
-                            </div>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ item.picture.actorname }}</time>
-                                <span class="tag-group__title">作者:</span>
-                                <el-tag
-                                        v-for="actors in item.actors"
-                                        :key="actors.id"
-                                        size="mini"
-                                        effect="plain"
-                                        @click="getActor(actors.id)"
-                                >{{ actors.chineseName }}
-                                </el-tag>
-                            </div>
-                        </div>
-                    </el-card>
-                </el-col>
-            </el-row>
+                    infinite-scroll-distance="50"
+            >
+                <li v-for="(item,index) in tableData.pornHistory.list" :key="index">
+                    <router-link
+                            @click="changeDetialId(index)"
+                            :to="{ name: 'detail', params: { id: item.video.id }}"
+                    >
+                        <img :src="item.video.coverUrl"/>
+                        <h4 class="clear">{{item.video.name}}</h4>
+                        <p class="clear">
+                            <span></span>
+                            <span class="tag-group__title">演员:</span>
+                            <el-tag
+                                    v-for="actor in item.video.actors"
+                                    :key="actor.id"
+                                    size="mini"
+                                    effect="plain"
+                                    @click="getType(types)"
+
+                            >{{ actor.chineseName }}
+                            </el-tag>
+                        </p>
+                    </router-link>
+                </li>
+            </ul>
             <div v-show="loading" class="page-infinite-loading">
                 <mt-spinner type="fading-circle"></mt-spinner>
                 客官您滑慢点...
@@ -188,7 +136,7 @@
     // 公司和要求公用一个子组件
     import compRequireComp from './compRequireComp.vue'
 
-    import {getPageList} from '@/api/picture'
+    import {getPageList} from '@/api/video'
     import {
         getHistory
     } from '@/api/viewHistory'
@@ -197,6 +145,7 @@
     } from '@/api/userFavorite'
 
     export default {
+        name: "pornHubVideoList",
         data() {
             return {
                 noMore: false,
@@ -211,28 +160,28 @@
                 allLoaded: false,
                 wrapperHeight: 0,
                 tableData: {
-                    comicList: [],
-                    comicFavorite: [],
-                    comicHistory: [],
+                    pornList: [],
+                    pornFavorite: [],
+                    pornHistory: [],
                 },
                 listQuery: {
-                    comicList: {
+                    pornList: {
                         pageNum: 1,
                         pageSize: 10,
                         actorName: null,
                         videoName: null,
                         types: null,
-                        videoType: 5
+                        videoType: 4
                     },
-                    comicFavorite: {
-                        type: 5,
+                    pornFavorite: {
+                        type: 4,
                         level: '',
                         pageSize: 10,
                         pageNum: 1,
                         load: true
                     },
-                    comicHistory: {
-                        type: 5,
+                    pornHistory: {
+                        type: 4,
                         startTime: null,
                         endTime: null,
                         pageSize: 10,
@@ -338,46 +287,45 @@
             // 模擬無限下拉加載
             loadMore() {
 
-                if (this.tab === 1) {
+                if(this.tab===1){
                     this.loading = true;
                     this.noMore = false;
-                    getPageList(this.listQuery.comicList).then(res => {
-                        this.listQuery.comicList.pageNum = this.randomNum(1, res.PageInfo.pages);
-                        if (this.tableData.comicList.length <= 0) {
-                            this.tableData.comicList = res.PageInfo
+                    getPageList(this.listQuery.pornList).then(res => {
+                        this.listQuery.pornList.pageNum = this.randomNum(1, res.PageInfo.pages);
+                        if (this.tableData.pornList.length <= 0) {
+                            this.tableData.pornList = res.PageInfo
                         } else {
-                            this.tableData.comicList.list = this.tableData.comicList.list.concat(res.PageInfo.list)
+                            this.tableData.pornList.list = this.tableData.pornList.list.concat(res.PageInfo.list)
                         }
                     })
-                } else if (this.tab === 2&&this.listQuery.comicFavorite.load) {
+                }else if(this.tab===2&&this.listQuery.pornHistory.load){
                     this.loading = true;
                     this.noMore = false;
-                    getList(this.listQuery.comicFavorite).then(res => {
+                    getList(this.listQuery.pornFavorite).then(res => {
                         if(res.pageNum>=res.pages){
-                            this.listQuery.comicFavorite.load = false;
+                            this.listQuery.pornFavorite.load = false;
                         }else{
-                            this.listQuery.comicFavorite.pageNum = res.pageNum+1;
+                            this.listQuery.pornFavorite.pageNum = res.pageNum+1;
                         }
-                        if (this.tableData.comicFavorite.length <= 0) {
-                            this.tableData.comicFavorite = res
+                        if (this.tableData.pornFavorite.length <= 0) {
+                            this.tableData.pornFavorite = res
                         } else {
-                            this.tableData.comicFavorite.list = this.tableData.comicFavorite.list.concat(res.list)
+                            this.tableData.pornFavorite.list = this.tableData.pornFavorite.list.concat(res.list)
                         }
                     })
-                } else if (this.tab === 3&&this.listQuery.comicHistory.load) {
+                }else if(this.tab===3&&this.listQuery.pornHistory.load){
                     this.loading = true;
                     this.noMore = false;
-                    getHistory(this.listQuery.comicHistory).then(res => {
+                    getHistory(this.listQuery.pornHistory).then(res => {
                         if(res.pageNum>=res.pages){
-                            this.listQuery.comicHistory.load = false;
-                            this.listQuery.comicHistory.pageNum = res.pageNum
+                            this.listQuery.pornHistory.load = false;
                         }else{
-                            this.listQuery.comicHistory.pageNum = res.pageNum+1;
+                            this.listQuery.pornHistory.pageNum = res.pageNum+1;
                         }
-                        if (this.tableData.comicHistory.length <= 0) {
-                            this.tableData.comicHistory = res
+                        if (this.tableData.pornHistory.length <= 0) {
+                            this.tableData.pornHistory = res
                         } else {
-                            this.tableData.comicHistory.list = this.tableData.comicHistory.list.concat(res.list)
+                            this.tableData.pornHistory.list = this.tableData.pornHistory.list.concat(res.list)
                         }
                     })
                 }else {
@@ -410,61 +358,67 @@
             },
             getPageList() {
                 this.noMore = false;
-                var listQuery = sessionStorage.getItem('listQuery_comic_video')
-                var refresh = sessionStorage.getItem('refresh_comic_video')
+                var listQuery = sessionStorage.getItem('listQuery_pornHub_video')
+                var refresh = sessionStorage.getItem('refresh_pornHub_video')
                 if (listQuery !== null && refresh !== null && refresh === 'true') {
                     this.listQuery = JSON.parse(listQuery)
                 }
-                getPageList(this.listQuery.comicList).then(res => {
-                    this.listQuery.comicList.pageNum = this.randomNum(1, res.PageInfo.pages);
+                getPageList(this.listQuery.pornList).then(res => {
+                    this.listQuery.pornList.pageNum = this.randomNum(1, res.PageInfo.pages);
                     this.tab = 1;
-                    this.tableData.comicList = res.PageInfo
+                    this.tableData.pornList = res.PageInfo
                 })
             },
             getFavoriteList() {
                 this.noMore = false;
-                getList(this.listQuery.comicFavorite).then(res => {
-                    if(res.pageNum>=res.pages){
-                        this.listQuery.comicFavorite.load = false;
-                        this.listQuery.comicFavorite.pageNum = res.pageNum
-                    }else{
-                        this.listQuery.comicFavorite.pageNum = res.pageNum+1;
+                getList(this.listQuery.pornFavorite).then(res => {
+                    if (res.pageNum >= res.pages) {
+                        this.listQuery.pornFavorite.load = false;
+                        this.listQuery.pornFavorite.pageNum = res.pageNum
+                    } else {
+                        this.listQuery.pornFavorite.pageNum = res.pageNum + 1;
                     }
                     this.tab = 2;
-                    this.tableData.comicFavorite = res
+                    this.tableData.pornFavorite = res
                 })
             },
             getHistoryList() {
                 this.noMore = false;
-                getHistory(this.listQuery.comicHistory).then(res => {
-                    if(res.pageNum>=res.pages){
-                        this.listQuery.comicHistory.load = false;
-                        this.listQuery.comicHistory.pageNum = res.pageNum
-                    }else{
-                        this.listQuery.comicHistory.pageNum = res.pageNum+1;
+                getHistory(this.listQuery.pornHistory).then(res => {
+                    if (res.pageNum >= res.pages) {
+                        this.listQuery.pornHistory.load = false;
+                        this.listQuery.pornHistory.pageNum = res.pageNum
+                    } else {
+                        this.listQuery.pornHistory.pageNum = res.pageNum + 1;
                     }
                     this.tab = 3;
-                    this.tableData.comicHistory = res
+                    this.tableData.pornHistory = res
                 })
             },
             handleCurrentChange(index) {
                 this.listQuery.pageNum = index
-                sessionStorage.setItem('refresh_comic_video', false)
+                sessionStorage.setItem('refresh_pornHub_video', false)
                 this.getPageList()
             },
             handleSizeChange(pageSize) {
                 this.listQuery.pageSize = pageSize
-                sessionStorage.setItem('refresh_comic_video', false)
+                sessionStorage.setItem('refresh_pornHub_video', false)
                 this.getPageList()
             },
             handleSelect(tab, event) {
                 console.log(tab);
                 this.tab = tab;
-                if (this.tab === '1') {
+                if(this.tab===1){
                     this.getPageList();
-                } else if (this.tab === '2') {
+                }else if(this.tab===2){
                     this.getFavoriteList();
-                } else if (this.tab === '3') {
+                }else if(this.tab===3){
+                    this.getHistoryList();
+                }else if(this.tab==='1'){
+                    this.getPageList();
+                }else if(this.tab==='2'){
+                    this.getFavoriteList();
+                }else if(this.tab==='3'){
                     this.getHistoryList();
                 }
             },
@@ -478,23 +432,24 @@
                 this.listQuery.types = arr1
                 this.listQuery.actorName = null
                 console.log(this.listQuery)
-                sessionStorage.setItem('refresh_comic_video', false)
+                sessionStorage.setItem('refresh_pornHub_video', false)
                 this.getPageList()
             },
             getActor(actor) {
                 event.stopPropagation()
                 this.listQuery.actorName = actor
                 this.listQuery.types = null
-                sessionStorage.setItem('refresh_comic_video', false)
+                sessionStorage.setItem('refresh_pornHub_video', false)
                 this.getPageList()
             },
             jump(videoid) {
-                sessionStorage.setItem('listQuery_comic_video', JSON.stringify(this.listQuery))
-                sessionStorage.setItem('refresh_comic_video', true)
-                sessionStorage.setItem("refresh_comic_detail", true);
-                sessionStorage.setItem("queryList", {id: videoid, type: 1});
+                sessionStorage.setItem('listQuery_pornHub_video', JSON.stringify(this.listQuery))
+                sessionStorage.setItem('refresh_pornHub_video', true)
+                sessionStorage.setItem("refresh_video_detail", true);
+                sessionStorage.setItem("queryList", {id: videoid, type: 2});
                 this.$router.push({
-                    name: 'comicDetail', // 要跳转的路径的 name,可在 router 文件夹下的 index.js 文件内找
+                    path: '/video_detail/index',
+                    name: 'jobdetail', // 要跳转的路径的 name,可在 router 文件夹下的 index.js 文件内找
                     params: {id: videoid}
                 })
             },
@@ -532,22 +487,13 @@
         },
         beforeRouteLeave(to, form, next) {
             sessionStorage.setItem(
-                "listQuery_comic_video",
+                "listQuery_pornHub_video",
                 JSON.stringify(this.listQuery)
             );
-            sessionStorage.setItem("refresh_comic_video", true);
+            sessionStorage.setItem("refresh_pornHub_video", true);
             next()
         }
     }
 </script>
 
-<style lang="stylus" scoped>
-    .spantest {
-        overflow: hidden;
-        -webkit-line-clamp: 1;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-
-    }
-</style>
+<style lang="stylus" scoped></style>

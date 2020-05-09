@@ -21,6 +21,10 @@
         <span class="icon-me"></span>
         <span>漫画</span>
       </router-link>
+      <router-link to="/pornHubVideoList" class="flex_child">
+        <span class="icon-me"></span>
+        <span>pornHub</span>
+      </router-link>
     </div>
   </div>
 </template>
