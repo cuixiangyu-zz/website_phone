@@ -2,7 +2,7 @@
   <div class="login-bg">
     <div id="login">
       <form action>
-        <h3>BOSS直聘</h3>
+        <h3>website</h3>
         <ul class="info-login">
           <li>
             <b>

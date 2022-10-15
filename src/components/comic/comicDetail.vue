@@ -38,6 +38,12 @@
                                 </el-tooltip>
                             </div>
                         </el-col>
+                      <el-col>
+                        <el-button-group>
+                          <el-button type="primary" @click="getNext('next')">下一个<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                          <el-button type="primary" @click="getNext('pre')">上一个<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                        </el-button-group>
+                      </el-col>
                     </el-row>
                 </el-col>
             </el-row>
@@ -61,7 +67,7 @@
 </template>
 
 <script>
-    import {getDetil} from "@/api/pictureDetail"
+    import {getDetil,getNext} from "@/api/pictureDetail"
     // 引入video样式
     import "video.js/dist/video-js.css"
     import "vue-video-player/src/custom-theme.css"
@@ -115,6 +121,18 @@
                     this.tableData = res
                 });
             },
+
+          getNext(type) {
+              this.saveViewHistory();
+            getNext({id: this.tableData.id,type:type}).then(res => {
+              const currentTime = Date.now();
+
+              this.viewHistory.type = 5;
+              this.viewHistory.videoId = res.id;
+              console.log(res)
+              this.tableData = res
+            });
+          },
             getType(type) {
                 event.stopPropagation();
                 const arr = [];

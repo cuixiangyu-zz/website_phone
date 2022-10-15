@@ -171,7 +171,8 @@
                         actorName: null,
                         videoName: null,
                         types: null,
-                        videoType: 4
+                        videoType: 4,
+                        currentPage: 1
                     },
                     pornFavorite: {
                         type: 4,
@@ -286,17 +287,21 @@
             },
             // 模擬無限下拉加載
             loadMore() {
-
+              if(this.loading === true){
+                return;
+              }
                 if(this.tab===1){
                     this.loading = true;
                     this.noMore = false;
                     getPageList(this.listQuery.pornList).then(res => {
+                      this.listQuery.pornList.currentPage = this.listQuery.pornList.pageNum;
                         this.listQuery.pornList.pageNum = this.randomNum(1, res.PageInfo.pages);
                         if (this.tableData.pornList.length <= 0) {
                             this.tableData.pornList = res.PageInfo
                         } else {
                             this.tableData.pornList.list = this.tableData.pornList.list.concat(res.PageInfo.list)
                         }
+                      this.loading = false;
                     })
                 }else if(this.tab===2&&this.listQuery.pornHistory.load){
                     this.loading = true;
@@ -312,6 +317,7 @@
                         } else {
                             this.tableData.pornFavorite.list = this.tableData.pornFavorite.list.concat(res.list)
                         }
+                      this.loading = false;
                     })
                 }else if(this.tab===3&&this.listQuery.pornHistory.load){
                     this.loading = true;
@@ -327,11 +333,12 @@
                         } else {
                             this.tableData.pornHistory.list = this.tableData.pornHistory.list.concat(res.list)
                         }
+                      this.loading = false;
                     })
                 }else {
                     this.noMore = true;
+                  this.loading = false;
                 }
-                this.loading = false
             },
             // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
             stopScroll() {
@@ -363,6 +370,7 @@
                 if (listQuery !== null && refresh !== null && refresh === 'true') {
                     this.listQuery = JSON.parse(listQuery)
                 }
+              this.listQuery.pornList.pageNum = this.listQuery.pornList.currentPage;
                 getPageList(this.listQuery.pornList).then(res => {
                     this.listQuery.pornList.pageNum = this.randomNum(1, res.PageInfo.pages);
                     this.tab = 1;
@@ -443,6 +451,8 @@
                 this.getPageList()
             },
             jump(videoid) {
+
+              this.listQuery.pornList.pageNum = this.listQuery.pornList.currentPage;
                 sessionStorage.setItem('listQuery_pornHub_video', JSON.stringify(this.listQuery))
                 sessionStorage.setItem('refresh_pornHub_video', true)
                 sessionStorage.setItem("refresh_video_detail", true);
@@ -486,6 +496,9 @@
             this.getPageList()
         },
         beforeRouteLeave(to, form, next) {
+            this.listQuery.pornFavorite.pageNum = 1;
+            this.listQuery.pornHistory.pageNum = 1;
+          this.listQuery.pornList.pageNum = this.listQuery.pornList.currentPage;
             sessionStorage.setItem(
                 "listQuery_pornHub_video",
                 JSON.stringify(this.listQuery)

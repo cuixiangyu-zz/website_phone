@@ -10,6 +10,10 @@
                 <el-menu-item index="2">我的收藏</el-menu-item>
                 <el-menu-item index="3">浏览记录</el-menu-item>
             </el-menu>
+          <mt-search style="height: 100%" v-if="tab===1" v-model="listQuery.japanList.pictureName" @keyup.enter.native="search"
+                     cancel-text="取消"
+                     placeholder="搜索">
+          </mt-search>
         </div>
         <!--列表-->
 
@@ -168,9 +172,10 @@
                         pageNum: 1,
                         pageSize: 10,
                         actorName: null,
-                        videoName: null,
+                        pictureName: null,
                         types: null,
-                        videoType: 1
+                        videoType: 1,
+                        currentPage: 1
                     },
                     japanFavorite: {
                         type: 1,
@@ -258,16 +263,29 @@
             // 模擬無限下拉加載
             loadMore() {
 
+              if(this.loading === true||this.noMore===true){
+                return;
+              }
+
                 if (this.tab === 1) {
                     this.loading = true;
                     this.noMore = false;
                     getPageList(this.listQuery.japanList).then(res => {
+                      this.listQuery.japanList.currentPage = this.listQuery.japanList.pageNum;
+                      if(this.listQuery.japanList.pictureName!==null &&this.listQuery.japanList.pictureName.length>0 &&this.listQuery.japanList.pageNum+1>res.PageInfo.pages){
+                        this.noMore = true;
+                      }else if(this.listQuery.japanList.pictureName!==null &&this.listQuery.japanList.pictureName.length>0){
+                        this.listQuery.japanList.pageNum +=1;
+                      }else{
                         this.listQuery.japanList.pageNum = this.randomNum(1, res.PageInfo.pages);
+                      }
+
                         if (this.tableData.japanList.length <= 0) {
                             this.tableData.japanList = res.PageInfo
                         } else {
                             this.tableData.japanList.list = this.tableData.japanList.list.concat(res.PageInfo.list)
                         }
+                      this.loading = false;
                     })
                 } else if (this.tab === 2 && this.listQuery.comicHistory.load) {
                     this.loading = true
@@ -284,6 +302,7 @@
                         } else {
                             this.tableData.japanFavorite.list = this.tableData.japanFavorite.list.concat(res.list)
                         }
+                      this.loading = false;
                     })
                 } else if (this.tab === 3 && this.listQuery.comicHistory.load) {
                     this.loading = true
@@ -300,11 +319,13 @@
                         } else {
                             this.tableData.japanHistory.list = this.tableData.japanHistory.list.concat(res.list)
                         }
+                      this.loading = false;
                     })
                 } else {
                     this.noMore = true;
+                  this.loading = false
                 }
-                this.loading = false
+
             },
             // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
             stopScroll() {
@@ -337,12 +358,34 @@
                 if (listQuery !== null && refresh !== null && refresh === 'true') {
                     this.listQuery = JSON.parse(listQuery)
                 }
+                this.listQuery.japanList.pageNum = this.listQuery.japanList.currentPage;
                 getPageList(this.listQuery.japanList).then(res => {
+                  if(this.listQuery.japanList.pictureName!==null &&this.listQuery.japanList.pictureName.length>0 &&this.listQuery.japanList.pageNum+1>res.PageInfo.pages){
+                    this.noMore = true;
+                  }else if(this.listQuery.japanList.pictureName!==null &&this.listQuery.japanList.pictureName.length>0){
+                    this.listQuery.japanList.pageNum +=1;
+                  }else{
                     this.listQuery.japanList.pageNum = this.randomNum(1, res.PageInfo.pages);
+                  }
+
                     this.tab = 1;
                     this.tableData.japanList = res.PageInfo
                 })
             },
+
+          search() {
+            this.noMore = false;
+            this.listQuery.japanList.pageNum = 1;
+            getPageList(this.listQuery.japanList).then(res => {
+              if(this.listQuery.japanList.pageNum+1>res.PageInfo.pages){
+                this.noMore = true;
+              }else{
+                this.listQuery.japanList.pageNum = this.randomNum(1, res.PageInfo.pages);
+                this.tab = 1;
+              }
+              this.tableData.japanList = res.PageInfo
+            })
+          },
             getFavoriteList() {
                 this.noMore = false;
                 getList(this.listQuery.japanFavorite).then(res => {
@@ -418,6 +461,7 @@
                 this.getPageList()
             },
             jump(videoid) {
+              this.listQuery.pornList.pageNum = this.listQuery.pornList.currentPage;
                 sessionStorage.setItem('listQuery_japan_video', JSON.stringify(this.listQuery))
                 sessionStorage.setItem('refresh_japan_video', true)
                 sessionStorage.setItem("refresh_video_detail", true);
@@ -461,6 +505,9 @@
             this.getPageList()
         },
         beforeRouteLeave(to, form, next) {
+            this.listQuery.japanFavorite.pageNum = 1;
+            this.listQuery.japanHistory.pageNum = 1;
+          this.listQuery.japanList.pageNum = this.listQuery.japanList.currentPage;
             sessionStorage.setItem(
                 "listQuery_japan_video",
                 JSON.stringify(this.listQuery)

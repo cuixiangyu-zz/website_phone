@@ -7,3 +7,11 @@ export function getDetil(params) {
     params
   })
 }
+
+export function getNext(params) {
+  return request({
+    url: '/picture/getNext',
+    method: 'get',
+    params
+  })
+}

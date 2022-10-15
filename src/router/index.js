@@ -12,6 +12,7 @@ const jobdetail = resolve => require(['@/components/job/jobdetail'], resolve)
 const americanVideoList = resolve => require(['@/components/american/americanVideoList'], resolve)
 const pornHubVideoList = resolve => require(['@/components/pornHub/pornHubVideoList'], resolve)
 const comicList = resolve => require(['@/components/comic/comicList'], resolve)
+const animateList = resolve => require(['@/components/animate/animateVideoList'], resolve)
 const comicDetail = resolve => require(['@/components/comic/comicDetail'], resolve)
 
 const company = resolve => require(['@/components/company/company'], resolve)
@@ -59,7 +60,7 @@ const scrollBehavior = (to, from, savedPosition) => {
 // 3.3 meta: { scrollToTop: true }
 
 export default new Router({
-    mode: 'history',
+    mode: 'hash',
     scrollBehavior,
     routes: [
         {
@@ -110,6 +111,11 @@ export default new Router({
                     path: "/aboutme",
                     name: "me",
                     component: aboutme
+                },
+                {
+                    path: "/animateList",
+                    name: "me",
+                    component: animateList
                 }
             ]
         },

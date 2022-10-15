@@ -6,8 +6,10 @@ import store from '@/store'
 // create an axios instance
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-   //baseURL: 'http://192.168.1.18:5002/website',
-  baseURL: 'http://www.caesium.top:5003/website',
+   //baseURL: 'http://47.99.153.52:8005/website',
+  baseURL: 'http://192.168.1.16:5004/website',
+  //baseURL: 'http://192.168.1.10:5004/website',
+  //baseURL: 'http://www.caesium.top:5004/website',
   // baseURL: 'http://localhost:9528',
   withCredentials: true, // send cookies when cross-domain requests
   timeout: 300000 // request timeout

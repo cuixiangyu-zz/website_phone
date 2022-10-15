@@ -222,7 +222,8 @@
                         actorName: null,
                         videoName: null,
                         types: null,
-                        videoType: 5
+                        videoType: 5,
+                        currentPage: 1
                     },
                     comicFavorite: {
                         type: 5,
@@ -337,17 +338,21 @@
             },
             // 模擬無限下拉加載
             loadMore() {
-
+              if(this.loading === true){
+                return;
+              }
                 if (this.tab === 1) {
                     this.loading = true;
                     this.noMore = false;
                     getPageList(this.listQuery.comicList).then(res => {
+                      this.listQuery.comicList.currentPage = this.listQuery.comicList.pageNum;
                         this.listQuery.comicList.pageNum = this.randomNum(1, res.PageInfo.pages);
                         if (this.tableData.comicList.length <= 0) {
                             this.tableData.comicList = res.PageInfo
                         } else {
                             this.tableData.comicList.list = this.tableData.comicList.list.concat(res.PageInfo.list)
                         }
+                      this.loading = false
                     })
                 } else if (this.tab === 2&&this.listQuery.comicFavorite.load) {
                     this.loading = true;
@@ -363,6 +368,7 @@
                         } else {
                             this.tableData.comicFavorite.list = this.tableData.comicFavorite.list.concat(res.list)
                         }
+                      this.loading = false
                     })
                 } else if (this.tab === 3&&this.listQuery.comicHistory.load) {
                     this.loading = true;
@@ -379,11 +385,13 @@
                         } else {
                             this.tableData.comicHistory.list = this.tableData.comicHistory.list.concat(res.list)
                         }
+                      this.loading = false
                     })
                 }else {
                     this.noMore = true;
+                  this.loading = false
                 }
-                this.loading = false
+
             },
             // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
             stopScroll() {
@@ -415,6 +423,7 @@
                 if (listQuery !== null && refresh !== null && refresh === 'true') {
                     this.listQuery = JSON.parse(listQuery)
                 }
+              this.listQuery.comicList.pageNum = this.listQuery.comicList.currentPage;
                 getPageList(this.listQuery.comicList).then(res => {
                     this.listQuery.comicList.pageNum = this.randomNum(1, res.PageInfo.pages);
                     this.tab = 1;
@@ -489,6 +498,7 @@
                 this.getPageList()
             },
             jump(videoid) {
+              this.listQuery.comicList.pageNum = this.listQuery.comicList.currentPage;
                 sessionStorage.setItem('listQuery_comic_video', JSON.stringify(this.listQuery))
                 sessionStorage.setItem('refresh_comic_video', true)
                 sessionStorage.setItem("refresh_comic_detail", true);
@@ -531,6 +541,9 @@
             this.getPageList()
         },
         beforeRouteLeave(to, form, next) {
+            this.listQuery.comicFavorite.pageNum = 1;
+            this.listQuery.comicHistory.pageNum = 1;
+          this.listQuery.comicList.pageNum = this.listQuery.comicList.currentPage;
             sessionStorage.setItem(
                 "listQuery_comic_video",
                 JSON.stringify(this.listQuery)

@@ -7,6 +7,15 @@ export function getVideoDetil(params) {
     params
   })
 }
+
+export function getNext(params) {
+  return request({
+    url: '/video/getNext',
+    method: 'get',
+    params
+  })
+}
+
 export function changelevel(params) {
   return request({
     url: '/video/changelevel',

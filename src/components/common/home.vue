@@ -13,7 +13,7 @@
         <span class="icon-company"></span>
         <span>欧美</span>
       </router-link>
-      <router-link to="/message" class="flex_child">
+      <router-link to="/animateList" class="flex_child">
         <span class="icon-message"></span>
         <span>动漫</span>
       </router-link>

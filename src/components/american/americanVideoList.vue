@@ -171,15 +171,15 @@
                         actorName: null,
                         videoName: null,
                         types: null,
-                        videoType: 2
+                        videoType: 2,
+                        currentPage: 1
                     },
                     americanFavorite: {
                         type: 2,
                         level: '',
                         pageSize: 10,
                         pageNum: 1,
-                        load : false,
-                        load: true
+                        load : false
                     },
                     americanHistory: {
                         type: 2,
@@ -187,8 +187,7 @@
                         endTime: null,
                         pageSize: 10,
                         pageNum: 1,
-                        load : false,
-                        load: true
+                        load : false
                     }
                 },
                 typeMap: '',
@@ -288,17 +287,21 @@
             },
             // 模擬無限下拉加載
             loadMore() {
-
+              if(this.loading === true||this.noMore===true){
+                return;
+              }
                 if(this.tab===1){
                     this.loading = true;
                     this.noMore = false;
                     getPageList(this.listQuery.americanList).then(res => {
+                      this.listQuery.americanList.currentPage = this.listQuery.americanList.pageNum;
                         this.listQuery.americanList.pageNum = this.randomNum(1, res.PageInfo.pages);
                         if (this.tableData.americanList.length <= 0) {
                             this.tableData.americanList = res.PageInfo
                         } else {
                             this.tableData.americanList.list = this.tableData.americanList.list.concat(res.PageInfo.list)
                         }
+                      this.loading = false;
                     })
                 }else if(this.tab===2&&this.listQuery.americanFavorite.load){
                     this.loading = true;
@@ -314,6 +317,7 @@
                         } else {
                             this.tableData.americanFavorite.list = this.tableData.americanFavorite.list.concat(res.list)
                         }
+                      this.loading = false;
                     })
                 }else if(this.tab===3&&this.listQuery.americanHistory.load){
                     this.loading = true;
@@ -329,11 +333,13 @@
                         } else {
                             this.tableData.americanHistory.list = this.tableData.americanHistory.list.concat(res.list)
                         }
+                      this.loading = false;
                     })
                 }else {
                     this.noMore = true;
+                  this.loading = false
                 }
-                this.loading = false
+
             },
             // 4.1、阻止局部滚动到达边界后会造成页面继续滚动(不合适)
             stopScroll() {
@@ -359,12 +365,13 @@
                 )
             },
             getPageList() {
-                this.noMore = true;
+                this.noMore = false;
                 var listQuery = sessionStorage.getItem('listQuery_american_video')
                 var refresh = sessionStorage.getItem('refresh_american_video')
                 if (listQuery !== null && refresh !== null && refresh === 'true') {
                     this.listQuery = JSON.parse(listQuery)
                 }
+              this.listQuery.americanList.pageNum = this.listQuery.americanList.currentPage;
                 getPageList(this.listQuery.americanList).then(res => {
                     this.listQuery.americanList.pageNum = this.randomNum(1, res.PageInfo.pages);
                     this.tab = 1;
@@ -372,7 +379,7 @@
                 })
             },
             getFavoriteList() {
-                this.noMore = true;
+                this.noMore = false;
                 getList(this.listQuery.americanFavorite).then(res => {
                     if (res.pageNum >= res.pages) {
                         this.listQuery.americanFavorite.load = false;
@@ -385,7 +392,7 @@
                 })
             },
             getHistoryList() {
-                this.noMore = true;
+                this.noMore = false;
                 getHistory(this.listQuery.americanHistory).then(res => {
                     if (res.pageNum >= res.pages) {
                         this.listQuery.americanHistory.load = false;
@@ -446,6 +453,7 @@
                 this.getPageList()
             },
             jump(videoid) {
+              this.listQuery.americanList.pageNum = this.listQuery.americanList.currentPage;
                 sessionStorage.setItem('listQuery_american_video', JSON.stringify(this.listQuery))
                 sessionStorage.setItem('refresh_american_video', true)
                 sessionStorage.setItem("refresh_video_detail", true);
@@ -489,6 +497,9 @@
             this.getPageList()
         },
         beforeRouteLeave(to, form, next) {
+            this.listQuery.americanFavorite.pageNum = 1;
+            this.listQuery.americanHistory.pageNum = 1;
+          this.listQuery.americanList.pageNum = this.listQuery.americanList.currentPage;
             sessionStorage.setItem(
                 "listQuery_american_video",
                 JSON.stringify(this.listQuery)
